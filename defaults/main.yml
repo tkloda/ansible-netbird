@@ -1,0 +1,130 @@
+---
+# defaults/main.yml - Default variables for the NetBird Ansible role
+
+# NetBird API connection settings
+# Can also be set via environment variables: NETBIRD_API_URL, NETBIRD_API_TOKEN
+netbird_api_url: ""
+netbird_api_token: ""
+netbird_validate_certs: true
+
+# User management
+netbird_users: []
+# Example:
+# netbird_users:
+#   - email: "user@example.com"
+#     name: "John Doe"
+#     role: "user"  # admin, user, owner
+#     auto_groups: []
+#     is_service_user: false
+#     state: present
+
+# Service users (for automation)
+netbird_service_users: []
+# Example:
+# netbird_service_users:
+#   - name: "automation-service"
+#     role: "admin"
+#     auto_groups: []
+#     state: present
+
+# Group management
+netbird_groups: []
+# Example:
+# netbird_groups:
+#   - name: "developers"
+#     peers: []
+#     state: present
+#   - name: "production"
+#     peers: []
+#     state: present
+
+# Setup key management
+netbird_setup_keys: []
+# Example:
+# netbird_setup_keys:
+#   - name: "new-server-key"
+#     key_type: "one-off"  # one-off, reusable
+#     expires_in: 86400  # 24 hours in seconds
+#     auto_groups: []
+#     ephemeral: false
+#     state: present
+
+# Policy management
+netbird_policies: []
+# Example:
+# netbird_policies:
+#   - name: "allow-all"
+#     description: "Allow all traffic between all peers"
+#     enabled: true
+#     rules:
+#       - name: "all-to-all"
+#         sources:
+#           - "group-id-1"
+#         destinations:
+#           - "group-id-2"
+#         bidirectional: true
+#         protocol: "all"
+#         action: "accept"
+#     state: present
+
+# Network management
+netbird_networks: []
+# Example:
+# netbird_networks:
+#   - name: "office-network"
+#     description: "Main office network"
+#     state: present
+
+# Route management (deprecated API, prefer networks)
+netbird_routes: []
+# Example:
+# netbird_routes:
+#   - network_id: "internal-route"
+#     network: "10.0.0.0/8"
+#     description: "Route to internal network"
+#     peer_id: "gateway-peer-id"
+#     metric: 100
+#     masquerade: true
+#     enabled: true
+#     groups: []
+#     state: present
+
+# DNS nameserver group management
+netbird_dns_nameserver_groups: []
+# Example:
+# netbird_dns_nameserver_groups:
+#   - name: "corporate-dns"
+#     description: "Corporate DNS servers"
+#     nameservers:
+#       - ip: "10.0.0.53"
+#         ns_type: "udp"
+#         port: 53
+#     groups: []
+#     domains: []
+#     enabled: true
+#     primary: false
+#     state: present
+
+# DNS settings
+netbird_dns_disabled_management_groups: []
+
+# Posture check management
+netbird_posture_checks: []
+# Example:
+# netbird_posture_checks:
+#   - name: "minimum-version"
+#     description: "Require minimum NetBird version"
+#     checks:
+#       nb_version_check:
+#         min_version: "0.25.0"
+#     state: present
+
+# Account settings
+netbird_account_settings: {}
+# Example:
+# netbird_account_settings:
+#   peer_login_expiration_enabled: true
+#   peer_login_expiration: 86400
+#   peer_inactivity_expiration_enabled: false
+#   jwt_groups_enabled: false
+#   dns_domain: "netbird.example.com"

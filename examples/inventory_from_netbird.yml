@@ -1,0 +1,99 @@
+---
+# Example: Generate Dynamic Inventory from NetBird Peers
+# This playbook exports NetBird peer information for use as inventory
+
+- name: Export NetBird Peers as Inventory
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    netbird_api_url: "https://netbird.example.com"
+    netbird_api_token: "{{ lookup('env', 'NETBIRD_API_TOKEN') }}"
+    inventory_output_file: "./netbird_inventory.yml"
+
+  tasks:
+    - name: Get all peers from NetBird
+      community.netbird.netbird_info:
+        api_url: "{{ netbird_api_url }}"
+        api_token: "{{ netbird_api_token }}"
+        resource: peers
+      register: all_peers
+
+    - name: Get all groups from NetBird
+      community.netbird.netbird_info:
+        api_url: "{{ netbird_api_url }}"
+        api_token: "{{ netbird_api_token }}"
+        resource: groups
+      register: all_groups
+
+    - name: Create group ID to name mapping
+      ansible.builtin.set_fact:
+        group_id_map: "{{ all_groups.data | items2dict(key_name='id', value_name='name') }}"
+
+    - name: Build inventory structure
+      ansible.builtin.set_fact:
+        netbird_inventory:
+          all:
+            hosts: "{{ all_peers.data | selectattr('connected', 'equalto', true) |
+                       map(attribute='name') | list |
+                       zip(all_peers.data | selectattr('connected', 'equalto', true) |
+                           map('community.general.dict_kv', 'ansible_host', attribute='ip')) |
+                       map('combine') | list }}"
+            children: {}
+
+    - name: Display connected peers
+      ansible.builtin.debug:
+        msg: |
+          Connected Peers:
+          {% for peer in all_peers.data if peer.connected %}
+          - {{ peer.name }} ({{ peer.ip }}) - {{ peer.os }} - Groups: {{ peer.groups | map(attribute='name') | join(', ') }}
+          {% endfor %}
+
+    - name: Display offline peers
+      ansible.builtin.debug:
+        msg: |
+          Offline Peers:
+          {% for peer in all_peers.data if not peer.connected %}
+          - {{ peer.name }} ({{ peer.ip }}) - Last seen: {{ peer.last_seen }}
+          {% endfor %}
+
+    - name: Create inventory file
+      ansible.builtin.copy:
+        content: |
+          # NetBird Dynamic Inventory
+          # Generated: {{ ansible_date_time.iso8601 | default(lookup('pipe', 'date -u +%Y-%m-%dT%H:%M:%SZ')) }}
+          #
+          # Total Peers: {{ all_peers.count }}
+          # Connected: {{ all_peers.data | selectattr('connected', 'equalto', true) | list | length }}
+          # Offline: {{ all_peers.data | selectattr('connected', 'equalto', false) | list | length }}
+
+          all:
+            hosts:
+          {% for peer in all_peers.data if peer.connected %}
+              {{ peer.name | replace('.', '_') | replace('-', '_') }}:
+                ansible_host: {{ peer.ip }}
+                netbird_peer_id: {{ peer.id }}
+                netbird_hostname: {{ peer.hostname }}
+                netbird_os: {{ peer.os }}
+                netbird_version: {{ peer.version }}
+                netbird_groups: {{ peer.groups | map(attribute='name') | list }}
+                netbird_dns_label: {{ peer.dns_label }}
+                netbird_last_seen: {{ peer.last_seen }}
+                netbird_user_id: {{ peer.user_id }}
+          {% endfor %}
+
+            children:
+          {% for group in all_groups.data %}
+              {{ group.name | replace('.', '_') | replace('-', '_') | replace(' ', '_') }}:
+                hosts:
+          {% for peer in all_peers.data if peer.connected and group.id in (peer.groups | map(attribute='id') | list) %}
+                  {{ peer.name | replace('.', '_') | replace('-', '_') }}: {}
+          {% endfor %}
+          {% endfor %}
+        dest: "{{ inventory_output_file }}"
+      delegate_to: localhost
+
+    - name: Display inventory location
+      ansible.builtin.debug:
+        msg: "Inventory written to: {{ inventory_output_file }}"

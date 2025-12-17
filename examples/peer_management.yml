@@ -1,0 +1,90 @@
+---
+# Example: Peer Management
+# This playbook demonstrates managing existing peers
+
+- name: Manage NetBird Peers
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    netbird_api_url: "https://netbird.example.com"
+    netbird_api_token: "{{ lookup('env', 'NETBIRD_API_TOKEN') }}"
+
+    # Peer configuration rules
+    peer_configs:
+      # Servers should have SSH enabled
+      servers:
+        name_pattern: "server-*"
+        ssh_enabled: true
+        login_expiration_enabled: true
+      # Workstations should not have SSH
+      workstations:
+        name_pattern: "ws-*"
+        ssh_enabled: false
+        login_expiration_enabled: true
+      # Admin machines need more access
+      admin:
+        name_pattern: "admin-*"
+        ssh_enabled: true
+        login_expiration_enabled: false
+
+  tasks:
+    - name: Get all peers
+      community.netbird.netbird_info:
+        api_url: "{{ netbird_api_url }}"
+        api_token: "{{ netbird_api_token }}"
+        resource: peers
+      register: all_peers
+
+    - name: Display all peers
+      ansible.builtin.debug:
+        msg: |
+          Peers found: {{ all_peers.count }}
+          {% for peer in all_peers.data %}
+          - {{ peer.name }} ({{ peer.ip }})
+            Connected: {{ peer.connected }}
+            SSH Enabled: {{ peer.ssh_enabled }}
+            OS: {{ peer.os }}
+            Version: {{ peer.version }}
+            Groups: {{ peer.groups | map(attribute='name') | join(', ') }}
+          {% endfor %}
+
+    - name: Find and configure server peers
+      community.netbird.netbird_peer:
+        api_url: "{{ netbird_api_url }}"
+        api_token: "{{ netbird_api_token }}"
+        peer_id: "{{ item.id }}"
+        ssh_enabled: true
+        login_expiration_enabled: true
+        state: present
+      loop: "{{ all_peers.data | selectattr('name', 'match', '^server-.*') | list }}"
+      loop_control:
+        label: "{{ item.name }}"
+      when: all_peers.data | selectattr('name', 'match', '^server-.*') | list | length > 0
+
+    - name: Find stale peers (offline for more than 30 days)
+      ansible.builtin.set_fact:
+        stale_peers: "{{ all_peers.data | selectattr('connected', 'equalto', false) | list }}"
+      # In production, you'd filter by last_seen date
+
+    - name: Display stale peers
+      ansible.builtin.debug:
+        msg: |
+          Stale peers (currently offline):
+          {% for peer in stale_peers %}
+          - {{ peer.name }} - Last seen: {{ peer.last_seen }}
+          {% endfor %}
+      when: stale_peers | length > 0
+
+    # Uncomment to delete stale peers
+    # - name: Delete stale peers
+    #   community.netbird.netbird_peer:
+    #     api_url: "{{ netbird_api_url }}"
+    #     api_token: "{{ netbird_api_token }}"
+    #     peer_id: "{{ item.id }}"
+    #     state: absent
+    #   loop: "{{ stale_peers }}"
+    #   loop_control:
+    #     label: "{{ item.name }}"
+    #   when: stale_peers | length > 0

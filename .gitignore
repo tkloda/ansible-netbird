@@ -1,0 +1,137 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Ansible collection build artifacts
+*.tar.gz
+community-netbird-*.tar.gz
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+pytest_debug.log
+
+# Translations
+*.mo
+*.pot
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE settings
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Thumbnails
+Thumbs.db
+ehthumbs.db
+
+# Ansible specific
+*.retry
+inventory/*.yml
+!inventory/example.yml
+/collections/ansible_collections/
+
+# Molecule test artifacts
+.molecule/
+molecule/**/molecule.yml.bak
+
+# Sensitive files - never commit these
+*.pem
+*.key
+*secret*
+*password*
+!*secret*.example
+!*password*.example
+vault.yml
+vault.yaml
+**/vault.yml
+**/vault.yaml
+.vault_pass
+.vault_password
+
+# Local configuration overrides
+*.local
+*.local.yml
+*.local.yaml
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+*.bak
+*.backup
+
+# Log files
+*.log
+logs/
+
+# Documentation build
+docs/_build/
+site/
+
+# Test output
+tests/output/
+test-results/
+

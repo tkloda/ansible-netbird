@@ -1,0 +1,35 @@
+---
+# tasks/users.yml - User management tasks
+
+- name: Manage NetBird regular users
+  community.netbird.netbird_user:
+    api_url: "{{ netbird_api_url }}"
+    api_token: "{{ netbird_api_token }}"
+    validate_certs: "{{ netbird_validate_certs }}"
+    email: "{{ item.email }}"
+    name: "{{ item.name | default(omit) }}"
+    role: "{{ item.role | default('user') }}"
+    auto_groups: "{{ item.auto_groups | default([]) }}"
+    is_service_user: false
+    is_blocked: "{{ item.is_blocked | default(omit) }}"
+    state: "{{ item.state | default('present') }}"
+  loop: "{{ netbird_users }}"
+  loop_control:
+    label: "{{ item.email }}"
+  when: netbird_users | length > 0
+
+- name: Manage NetBird service users
+  community.netbird.netbird_user:
+    api_url: "{{ netbird_api_url }}"
+    api_token: "{{ netbird_api_token }}"
+    validate_certs: "{{ netbird_validate_certs }}"
+    name: "{{ item.name }}"
+    role: "{{ item.role | default('admin') }}"
+    auto_groups: "{{ item.auto_groups | default([]) }}"
+    is_service_user: true
+    is_blocked: "{{ item.is_blocked | default(omit) }}"
+    state: "{{ item.state | default('present') }}"
+  loop: "{{ netbird_service_users }}"
+  loop_control:
+    label: "{{ item.name }}"
+  when: netbird_service_users | length > 0

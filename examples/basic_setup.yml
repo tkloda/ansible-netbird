@@ -1,0 +1,80 @@
+---
+# Example: Basic NetBird Setup
+# This playbook demonstrates basic NetBird configuration
+
+- name: Configure NetBird Infrastructure
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    netbird_api_url: "https://netbird.example.com"
+    # Use ansible-vault for the token in production
+    netbird_api_token: "{{ lookup('env', 'NETBIRD_API_TOKEN') }}"
+
+  tasks:
+    - name: Gather current NetBird information
+      community.netbird.netbird_info:
+        api_url: "{{ netbird_api_url }}"
+        api_token: "{{ netbird_api_token }}"
+        resource: current_user
+      register: current_user
+
+    - name: Display current user
+      ansible.builtin.debug:
+        msg: "Connected as: {{ current_user.data.email }}"
+
+    - name: Create a group for developers
+      community.netbird.netbird_group:
+        api_url: "{{ netbird_api_url }}"
+        api_token: "{{ netbird_api_token }}"
+        name: "developers"
+        state: present
+      register: developers_group
+
+    - name: Create a group for servers
+      community.netbird.netbird_group:
+        api_url: "{{ netbird_api_url }}"
+        api_token: "{{ netbird_api_token }}"
+        name: "servers"
+        state: present
+      register: servers_group
+
+    - name: Create a setup key for new servers
+      community.netbird.netbird_setup_key:
+        api_url: "{{ netbird_api_url }}"
+        api_token: "{{ netbird_api_token }}"
+        name: "server-enrollment"
+        key_type: "reusable"
+        expires_in: 604800  # 7 days
+        auto_groups:
+          - "{{ servers_group.group.id }}"
+        state: present
+      register: server_key
+
+    - name: Display the setup key
+      ansible.builtin.debug:
+        msg: "Server setup key: {{ server_key.setup_key.key | default('Already exists') }}"
+      when: server_key.changed
+
+    - name: Create a policy allowing developers to access servers
+      community.netbird.netbird_policy:
+        api_url: "{{ netbird_api_url }}"
+        api_token: "{{ netbird_api_token }}"
+        name: "developers-to-servers"
+        description: "Allow developers to access servers"
+        enabled: true
+        rules:
+          - name: "developers-ssh-access"
+            sources:
+              - "{{ developers_group.group.id }}"
+            destinations:
+              - "{{ servers_group.group.id }}"
+            bidirectional: false
+            protocol: "tcp"
+            ports:
+              - "22"
+              - "443"
+              - "8080"
+            action: "accept"
+        state: present

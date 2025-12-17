@@ -1,0 +1,50 @@
+---
+# meta/main.yml - Role metadata
+
+galaxy_info:
+  role_name: netbird
+  namespace: community
+  author: Community Contributors
+  description: Ansible role for managing NetBird self-hosted infrastructure via API
+  company: Community
+
+  license: GPL-3.0-or-later
+
+  min_ansible_version: "2.12"
+
+  platforms:
+    - name: GenericUNIX
+      versions:
+        - all
+    - name: GenericBSD
+      versions:
+        - all
+    - name: Debian
+      versions:
+        - all
+    - name: Ubuntu
+      versions:
+        - all
+    - name: EL
+      versions:
+        - all
+    - name: Fedora
+      versions:
+        - all
+    - name: MacOSX
+      versions:
+        - all
+    - name: Windows
+      versions:
+        - all
+
+  galaxy_tags:
+    - netbird
+    - vpn
+    - mesh
+    - networking
+    - wireguard
+    - zero_trust
+    - security
+
+dependencies: []

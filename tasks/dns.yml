@@ -1,0 +1,32 @@
+---
+# tasks/dns.yml - DNS management tasks
+
+- name: Manage NetBird DNS nameserver groups
+  community.netbird.netbird_dns:
+    api_url: "{{ netbird_api_url }}"
+    api_token: "{{ netbird_api_token }}"
+    validate_certs: "{{ netbird_validate_certs }}"
+    resource_type: nameserver_group
+    name: "{{ item.name }}"
+    description: "{{ item.description | default('') }}"
+    nameservers: "{{ item.nameservers }}"
+    groups: "{{ item.groups | default([]) }}"
+    domains: "{{ item.domains | default([]) }}"
+    enabled: "{{ item.enabled | default(true) }}"
+    primary: "{{ item.primary | default(false) }}"
+    search_domains_enabled: "{{ item.search_domains_enabled | default(true) }}"
+    state: "{{ item.state | default('present') }}"
+  loop: "{{ netbird_dns_nameserver_groups }}"
+  loop_control:
+    label: "{{ item.name }}"
+  when: netbird_dns_nameserver_groups | length > 0
+
+- name: Configure NetBird DNS settings
+  community.netbird.netbird_dns:
+    api_url: "{{ netbird_api_url }}"
+    api_token: "{{ netbird_api_token }}"
+    validate_certs: "{{ netbird_validate_certs }}"
+    resource_type: settings
+    disabled_management_groups: "{{ netbird_dns_disabled_management_groups }}"
+    state: present
+  when: netbird_dns_disabled_management_groups | length > 0

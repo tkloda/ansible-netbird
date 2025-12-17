@@ -1,0 +1,22 @@
+---
+# tasks/setup_keys.yml - Setup key management tasks
+
+- name: Manage NetBird setup keys
+  community.netbird.netbird_setup_key:
+    api_url: "{{ netbird_api_url }}"
+    api_token: "{{ netbird_api_token }}"
+    validate_certs: "{{ netbird_validate_certs }}"
+    name: "{{ item.name }}"
+    key_type: "{{ item.key_type | default('one-off') }}"
+    expires_in: "{{ item.expires_in | default(86400) }}"
+    revoked: "{{ item.revoked | default(false) }}"
+    auto_groups: "{{ item.auto_groups | default([]) }}"
+    usage_limit: "{{ item.usage_limit | default(0) }}"
+    ephemeral: "{{ item.ephemeral | default(false) }}"
+    allow_extra_dns_labels: "{{ item.allow_extra_dns_labels | default(false) }}"
+    state: "{{ item.state | default('present') }}"
+  loop: "{{ netbird_setup_keys }}"
+  loop_control:
+    label: "{{ item.name }}"
+  register: netbird_created_setup_keys
+  when: netbird_setup_keys | length > 0

@@ -1,0 +1,16 @@
+---
+# tasks/posture_checks.yml - Posture check management tasks
+
+- name: Manage NetBird posture checks
+  community.netbird.netbird_posture_check:
+    api_url: "{{ netbird_api_url }}"
+    api_token: "{{ netbird_api_token }}"
+    validate_certs: "{{ netbird_validate_certs }}"
+    name: "{{ item.name }}"
+    description: "{{ item.description | default('') }}"
+    checks: "{{ item.checks | default({}) }}"
+    state: "{{ item.state | default('present') }}"
+  loop: "{{ netbird_posture_checks }}"
+  loop_control:
+    label: "{{ item.name }}"
+  when: netbird_posture_checks | length > 0

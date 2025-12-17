@@ -1,0 +1,28 @@
+---
+namespace: community
+name: netbird
+version: 1.0.0
+readme: README.md
+authors:
+  - Community Contributors
+description: Ansible collection for managing NetBird self-hosted infrastructure via API
+license_file: LICENSE
+tags:
+  - netbird
+  - vpn
+  - mesh
+  - networking
+  - wireguard
+  - zero-trust
+dependencies: {}
+repository: https://github.com/community/ansible-netbird
+documentation: https://github.com/community/ansible-netbird
+homepage: https://netbird.io
+issues: https://github.com/community/ansible-netbird/issues
+build_ignore:
+  - '*.tar.gz'
+  - '.git'
+  - '.github'
+  - 'tests'
+  - 'venv'
+  - '__pycache__'

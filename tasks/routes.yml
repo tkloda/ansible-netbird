@@ -1,0 +1,24 @@
+---
+# tasks/routes.yml - Route management tasks (deprecated API)
+
+- name: Manage NetBird routes
+  community.netbird.netbird_route:
+    api_url: "{{ netbird_api_url }}"
+    api_token: "{{ netbird_api_token }}"
+    validate_certs: "{{ netbird_validate_certs }}"
+    network_id: "{{ item.network_id }}"
+    network: "{{ item.network }}"
+    description: "{{ item.description | default('') }}"
+    peer_id: "{{ item.peer_id | default(omit) }}"
+    peer_groups: "{{ item.peer_groups | default(omit) }}"
+    metric: "{{ item.metric | default(9999) }}"
+    masquerade: "{{ item.masquerade | default(true) }}"
+    enabled: "{{ item.enabled | default(true) }}"
+    groups: "{{ item.groups | default([]) }}"
+    keep_route: "{{ item.keep_route | default(false) }}"
+    domains: "{{ item.domains | default(omit) }}"
+    state: "{{ item.state | default('present') }}"
+  loop: "{{ netbird_routes }}"
+  loop_control:
+    label: "{{ item.network_id }}"
+  when: netbird_routes | length > 0

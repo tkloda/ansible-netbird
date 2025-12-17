@@ -1,0 +1,87 @@
+---
+# Example: Dynamic Policy Management
+# This playbook demonstrates creating policies based on existing infrastructure
+
+- name: Create Dynamic NetBird Policies
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    netbird_api_url: "https://netbird.example.com"
+    netbird_api_token: "{{ lookup('env', 'NETBIRD_API_TOKEN') }}"
+
+    # Define policy rules by group names
+    policy_definitions:
+      - name: "developers-full-access"
+        description: "Developers can access staging and development"
+        source_groups: ["developers"]
+        destination_groups: ["staging-servers", "dev-servers"]
+        protocol: "all"
+        bidirectional: true
+        enabled: true
+
+      - name: "devops-production-access"
+        description: "DevOps team can access all servers"
+        source_groups: ["devops"]
+        destination_groups: ["production-servers", "staging-servers", "databases"]
+        protocol: "all"
+        bidirectional: true
+        enabled: true
+
+      - name: "monitoring-readonly"
+        description: "Monitoring access to all servers"
+        source_groups: ["monitoring"]
+        destination_groups: ["production-servers", "staging-servers"]
+        protocol: "tcp"
+        ports: ["9090", "9100", "9093"]  # Prometheus, Node Exporter, Alertmanager
+        bidirectional: false
+        enabled: true
+
+      - name: "database-access"
+        description: "Production servers can access databases"
+        source_groups: ["production-servers"]
+        destination_groups: ["databases"]
+        protocol: "tcp"
+        ports: ["5432", "3306", "27017"]  # PostgreSQL, MySQL, MongoDB
+        bidirectional: false
+        enabled: true
+
+  tasks:
+    - name: Get all existing groups
+      community.netbird.netbird_info:
+        api_url: "{{ netbird_api_url }}"
+        api_token: "{{ netbird_api_token }}"
+        resource: groups
+      register: existing_groups
+
+    - name: Create group name to ID mapping
+      ansible.builtin.set_fact:
+        group_map: "{{ existing_groups.data | items2dict(key_name='name', value_name='id') }}"
+
+    - name: Display available groups
+      ansible.builtin.debug:
+        msg: "Available groups: {{ group_map.keys() | list }}"
+
+    - name: Create policies dynamically
+      community.netbird.netbird_policy:
+        api_url: "{{ netbird_api_url }}"
+        api_token: "{{ netbird_api_token }}"
+        name: "{{ item.name }}"
+        description: "{{ item.description }}"
+        enabled: "{{ item.enabled }}"
+        rules:
+          - name: "{{ item.name }}-rule"
+            sources: "{{ item.source_groups | map('extract', group_map) | list }}"
+            destinations: "{{ item.destination_groups | map('extract', group_map) | list }}"
+            bidirectional: "{{ item.bidirectional | default(true) }}"
+            protocol: "{{ item.protocol | default('all') }}"
+            ports: "{{ item.ports | default(omit) }}"
+            action: "accept"
+        state: present
+      loop: "{{ policy_definitions }}"
+      loop_control:
+        label: "{{ item.name }}"
+      when: >
+        (item.source_groups | difference(group_map.keys() | list) | length == 0) and
+        (item.destination_groups | difference(group_map.keys() | list) | length == 0)

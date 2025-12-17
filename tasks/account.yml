@@ -1,0 +1,23 @@
+---
+# tasks/account.yml - Account settings management tasks
+
+- name: Configure NetBird account settings
+  community.netbird.netbird_account:
+    api_url: "{{ netbird_api_url }}"
+    api_token: "{{ netbird_api_token }}"
+    validate_certs: "{{ netbird_validate_certs }}"
+    peer_login_expiration_enabled: "{{ netbird_account_settings.peer_login_expiration_enabled | default(omit) }}"
+    peer_login_expiration: "{{ netbird_account_settings.peer_login_expiration | default(omit) }}"
+    peer_inactivity_expiration_enabled: "{{ netbird_account_settings.peer_inactivity_expiration_enabled | default(omit) }}"
+    peer_inactivity_expiration: "{{ netbird_account_settings.peer_inactivity_expiration | default(omit) }}"
+    regular_users_view_blocked: "{{ netbird_account_settings.regular_users_view_blocked | default(omit) }}"
+    groups_propagation_enabled: "{{ netbird_account_settings.groups_propagation_enabled | default(omit) }}"
+    jwt_groups_enabled: "{{ netbird_account_settings.jwt_groups_enabled | default(omit) }}"
+    jwt_groups_claim_name: "{{ netbird_account_settings.jwt_groups_claim_name | default(omit) }}"
+    jwt_allow_groups: "{{ netbird_account_settings.jwt_allow_groups | default(omit) }}"
+    routing_peer_dns_resolution_enabled: "{{ netbird_account_settings.routing_peer_dns_resolution_enabled | default(omit) }}"
+    dns_domain: "{{ netbird_account_settings.dns_domain | default(omit) }}"
+    network_range: "{{ netbird_account_settings.network_range | default(omit) }}"
+    lazy_connection_enabled: "{{ netbird_account_settings.lazy_connection_enabled | default(omit) }}"
+    state: present
+  when: netbird_account_settings | length > 0

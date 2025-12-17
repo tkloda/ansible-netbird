@@ -1,0 +1,147 @@
+---
+# Example: Full NetBird Infrastructure Configuration
+# This playbook demonstrates comprehensive NetBird configuration using the role
+
+- name: Configure Complete NetBird Infrastructure
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    netbird_api_url: "https://netbird.example.com"
+    netbird_api_token: "{{ lookup('env', 'NETBIRD_API_TOKEN') }}"
+    netbird_validate_certs: true
+
+    # Account settings
+    netbird_account_settings:
+      peer_login_expiration_enabled: true
+      peer_login_expiration: 604800  # 7 days
+      peer_inactivity_expiration_enabled: true
+      peer_inactivity_expiration: 2592000  # 30 days
+      groups_propagation_enabled: true
+      dns_domain: "netbird.example.com"
+
+    # Groups
+    netbird_groups:
+      - name: "developers"
+        state: present
+      - name: "devops"
+        state: present
+      - name: "production-servers"
+        state: present
+      - name: "staging-servers"
+        state: present
+      - name: "databases"
+        state: present
+      - name: "monitoring"
+        state: present
+
+    # Service users for automation
+    netbird_service_users:
+      - name: "ci-cd-service"
+        role: "admin"
+        auto_groups: []
+        state: present
+      - name: "monitoring-service"
+        role: "user"
+        auto_groups: []
+        state: present
+
+    # Setup keys
+    netbird_setup_keys:
+      - name: "production-server-key"
+        key_type: "reusable"
+        expires_in: 2592000  # 30 days
+        auto_groups: []  # Will be updated after groups are created
+        ephemeral: false
+        state: present
+      - name: "staging-server-key"
+        key_type: "reusable"
+        expires_in: 604800  # 7 days
+        auto_groups: []
+        ephemeral: false
+        state: present
+      - name: "ephemeral-test-key"
+        key_type: "reusable"
+        expires_in: 86400  # 1 day
+        auto_groups: []
+        ephemeral: true
+        state: present
+
+    # DNS configuration
+    netbird_dns_nameserver_groups:
+      - name: "internal-dns"
+        description: "Internal DNS servers"
+        nameservers:
+          - ip: "10.0.0.53"
+            ns_type: "udp"
+            port: 53
+          - ip: "10.0.0.54"
+            ns_type: "udp"
+            port: 53
+        groups: []  # All peers
+        domains:
+          - "internal.example.com"
+          - "corp.example.com"
+        enabled: true
+        primary: false
+        state: present
+      - name: "public-dns"
+        description: "Public DNS fallback"
+        nameservers:
+          - ip: "8.8.8.8"
+            ns_type: "udp"
+            port: 53
+          - ip: "8.8.4.4"
+            ns_type: "udp"
+            port: 53
+        groups: []
+        domains: []
+        enabled: true
+        primary: true
+        state: present
+
+    # Posture checks
+    netbird_posture_checks:
+      - name: "minimum-version"
+        description: "Require minimum NetBird client version"
+        checks:
+          nb_version_check:
+            min_version: "0.25.0"
+        state: present
+      - name: "office-network-only"
+        description: "Only allow connections from office networks"
+        checks:
+          peer_network_range_check:
+            ranges:
+              - "10.0.0.0/8"
+              - "192.168.0.0/16"
+              - "172.16.0.0/12"
+            action: "allow"
+        state: present
+
+  roles:
+    - role: community.netbird
+
+  post_tasks:
+    - name: Gather all peers
+      community.netbird.netbird_info:
+        api_url: "{{ netbird_api_url }}"
+        api_token: "{{ netbird_api_token }}"
+        resource: peers
+      register: all_peers
+
+    - name: Display peer summary
+      ansible.builtin.debug:
+        msg: "Total peers: {{ all_peers.count }}"
+
+    - name: Gather all policies
+      community.netbird.netbird_info:
+        api_url: "{{ netbird_api_url }}"
+        api_token: "{{ netbird_api_token }}"
+        resource: policies
+      register: all_policies
+
+    - name: Display policy summary
+      ansible.builtin.debug:
+        msg: "Total policies: {{ all_policies.count }}"
