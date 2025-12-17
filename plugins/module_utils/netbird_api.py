@@ -8,8 +8,10 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 import json
-from ansible.module_utils.urls import fetch_url
+import ssl
+from ansible.module_utils.urls import open_url
 from ansible.module_utils.basic import env_fallback
+from ansible.module_utils.six.moves.urllib.error import HTTPError, URLError
 
 
 class NetBirdAPIError(Exception):
@@ -58,7 +60,7 @@ class NetBirdAPI:
             tuple: (response_data, status_code)
         """
         url = f"{self.api_url}{endpoint}"
-        
+
         if params:
             query_string = '&'.join([f"{k}={v}" for k, v in params.items() if v is not None])
             if query_string:
@@ -68,47 +70,61 @@ class NetBirdAPI:
         if data is not None:
             body = json.dumps(data)
 
-        response, info = fetch_url(
-            self.module,
-            url,
-            method=method,
-            headers=self.headers,
-            data=body,
-            validate_certs=self.validate_certs
-        )
+        try:
+            response = open_url(
+                url,
+                method=method,
+                headers=self.headers,
+                data=body,
+                validate_certs=self.validate_certs,
+                timeout=30
+            )
+            status_code = response.getcode()
+            response_body = response.read()
 
-        status_code = info.get('status', -1)
-        
-        # Handle response
-        if response is not None:
-            try:
-                response_body = response.read()
-                if response_body:
-                    response_data = json.loads(response_body)
-                else:
-                    response_data = None
-            except (ValueError, json.JSONDecodeError):
-                response_data = response_body.decode('utf-8') if response_body else None
-        else:
-            response_data = None
-            if 'body' in info:
+            if response_body:
                 try:
-                    response_data = json.loads(info['body'])
+                    response_data = json.loads(response_body)
                 except (ValueError, json.JSONDecodeError):
-                    response_data = info.get('body')
+                    response_data = response_body.decode('utf-8') if isinstance(response_body, bytes) else response_body
+            else:
+                response_data = None
 
-        # Handle errors
-        if status_code >= 400:
-            error_msg = info.get('msg', 'Unknown error')
-            if response_data and isinstance(response_data, dict):
-                error_msg = response_data.get('message', response_data.get('error', error_msg))
+            return response_data, status_code
+
+        except HTTPError as e:
+            status_code = e.code
+            error_body = e.read()
+            error_msg = str(e.reason)
+            response_data = None
+
+            if error_body:
+                try:
+                    response_data = json.loads(error_body)
+                    if isinstance(response_data, dict):
+                        error_msg = response_data.get('message', response_data.get('error', error_msg))
+                except (ValueError, json.JSONDecodeError):
+                    response_data = error_body.decode('utf-8') if isinstance(error_body, bytes) else error_body
+
             raise NetBirdAPIError(
                 f"API request failed: {error_msg}",
                 status_code=status_code,
                 response=response_data
             )
 
-        return response_data, status_code
+        except URLError as e:
+            raise NetBirdAPIError(
+                f"Failed to connect to API: {str(e.reason)}",
+                status_code=-1,
+                response=None
+            )
+
+        except ssl.SSLError as e:
+            raise NetBirdAPIError(
+                f"SSL error: {str(e)}. Try setting validate_certs=false if using self-signed certificates.",
+                status_code=-1,
+                response=None
+            )
 
     def get(self, endpoint, params=None):
         """Make a GET request."""
