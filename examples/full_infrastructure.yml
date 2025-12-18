@@ -120,6 +120,69 @@
             action: "allow"
         state: present
 
+    # Networks with routers and resources (replaces deprecated routes)
+    netbird_networks:
+      # Internal corporate network with HA routing
+      - name: "corporate-internal"
+        description: "Corporate internal network with HA routing"
+        routers:
+          - peer: "primary-gateway-peer-id"
+            metric: 100
+            masquerade: true
+          - peer: "backup-gateway-peer-id"
+            metric: 200
+            masquerade: true
+        resources:
+          - address: "10.0.0.0/8"
+            name: "internal-networks"
+            description: "All internal IP ranges"
+            groups: []  # Will be updated with group IDs
+          - address: "172.16.0.0/12"
+            name: "docker-networks"
+            description: "Docker and container networks"
+            groups: []
+        state: present
+
+      # Domain-based routing for internal services
+      - name: "internal-services"
+        description: "Route traffic to internal domains"
+        routers:
+          - peer: "dns-gateway-peer-id"
+            metric: 100
+            masquerade: true
+        resources:
+          - address: "internal.example.com"
+            name: "internal-portal"
+            description: "Internal company portal"
+            groups: []
+          - address: "*.corp.example.com"
+            name: "corp-subdomains"
+            description: "All corporate subdomains"
+            groups: []
+          - address: "gitlab.internal.example.com"
+            name: "gitlab"
+            description: "Internal GitLab instance"
+            groups: []
+        state: present
+
+      # Database network with restricted access
+      - name: "database-network"
+        description: "Database servers - restricted access"
+        routers:
+          - peer: "db-gateway-peer-id"
+            metric: 100
+            masquerade: false
+        resources:
+          - address: "10.100.0.0/24"
+            name: "production-databases"
+            description: "Production database servers"
+            groups: []  # Will be restricted to specific groups
+          - address: "10.100.1.0/24"
+            name: "staging-databases"
+            description: "Staging database servers"
+            groups: []
+        state: present
+
   roles:
     - role: community.ansible_netbird
 

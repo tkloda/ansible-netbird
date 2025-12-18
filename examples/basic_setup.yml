@@ -79,3 +79,52 @@
             action: "accept"
         state: present
 
+    # Network Routing Examples
+    - name: Create internal network with routing
+      community.ansible_netbird.netbird_network:
+        api_url: "{{ netbird_api_url }}"
+        api_token: "{{ netbird_api_token }}"
+        name: "internal-network"
+        description: "Route to internal resources"
+        routers:
+          - peer: "gateway-peer-id"  # Replace with actual peer ID
+            metric: 100
+            masquerade: true
+        resources:
+          - address: "10.0.0.0/8"
+            name: "internal-range"
+            description: "All internal IP addresses"
+            groups:
+              - "{{ developers_group.group.id }}"
+        state: present
+      register: internal_network
+
+    - name: Create network with domain-based routing
+      community.ansible_netbird.netbird_network:
+        api_url: "{{ netbird_api_url }}"
+        api_token: "{{ netbird_api_token }}"
+        name: "internal-services"
+        description: "Route traffic to internal domains"
+        routers:
+          - peer: "dns-gateway-peer-id"  # Replace with actual peer ID
+            metric: 100
+            masquerade: true
+        resources:
+          # Route specific domain
+          - address: "gitlab.internal.example.com"
+            name: "gitlab"
+            groups:
+              - "{{ developers_group.group.id }}"
+          # Route all subdomains with wildcard
+          - address: "*.internal.example.com"
+            name: "internal-subdomains"
+            description: "All internal subdomains"
+            groups:
+              - "{{ developers_group.group.id }}"
+        state: present
+      register: services_network
+
+    - name: Display network info
+      ansible.builtin.debug:
+        msg: "Created networks: {{ internal_network.network.name }}, {{ services_network.network.name }}"
+

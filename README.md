@@ -13,8 +13,11 @@ This collection provides comprehensive management of NetBird resources:
 - **Peers** - Manage peer settings (SSH, expiration, etc.)
 - **Setup Keys** - Create enrollment keys for new peers
 - **Policies** - Define network access rules between groups
-- **Networks** - Configure network routing
-- **Routes** - Manage legacy routes (deprecated API)
+- **Networks** - Configure network routing with routers and resources
+  - IP/CIDR routing (`10.0.0.0/8`, `192.168.1.0/24`)
+  - Domain-based routing (`example.com`, `*.corp.example.com`)
+  - High availability with multiple routers and metrics
+- **Routes** - Manage legacy routes (deprecated, use Networks instead)
 - **DNS** - Configure nameserver groups and DNS settings
 - **Posture Checks** - Define security compliance requirements
 - **Accounts** - Manage account-wide settings
@@ -202,24 +205,113 @@ Manage NetBird access policies.
 
 ### netbird_network
 
-Manage NetBird networks.
+Manage NetBird networks with routers and resources. This module provides full routing capabilities, replacing the deprecated routes API.
+
+**Features:**
+- Create networks with routing peers (routers)
+- Define network resources (IP ranges, CIDRs, or domains)
+- Support for domain-based routing including wildcards (`*.example.com`)
+- High availability with multiple routers and different metrics
 
 ```yaml
-- name: Create network
+# Simple network (container only)
+- name: Create simple network
   community.ansible_netbird.netbird_network:
     api_url: "{{ netbird_api_url }}"
     api_token: "{{ netbird_api_token }}"
     name: "office-network"
     description: "Main office network"
     state: present
+
+# Full network with routers and resources
+- name: Create network with routing
+  community.ansible_netbird.netbird_network:
+    api_url: "{{ netbird_api_url }}"
+    api_token: "{{ netbird_api_token }}"
+    name: "internal-network"
+    description: "Corporate internal network"
+    routers:
+      - peer: "gateway-peer-id"
+        metric: 100
+        masquerade: true
+    resources:
+      - address: "10.0.0.0/8"
+        name: "internal-range"
+        description: "All internal IPs"
+        groups:
+          - "all-users-group-id"
+    state: present
+
+# HA network with multiple routers
+- name: Create HA network with failover
+  community.ansible_netbird.netbird_network:
+    api_url: "{{ netbird_api_url }}"
+    api_token: "{{ netbird_api_token }}"
+    name: "ha-network"
+    description: "High availability network"
+    routers:
+      - peer_groups:
+          - "primary-gateways"
+        metric: 100
+        masquerade: true
+      - peer_groups:
+          - "backup-gateways"
+        metric: 200
+        masquerade: true
+    resources:
+      - address: "192.168.0.0/16"
+        name: "private-networks"
+        groups:
+          - "developers-group-id"
+    state: present
+
+# Domain-based routing
+- name: Create network with domain routing
+  community.ansible_netbird.netbird_network:
+    api_url: "{{ netbird_api_url }}"
+    api_token: "{{ netbird_api_token }}"
+    name: "internal-services"
+    description: "Route traffic to internal domains"
+    routers:
+      - peer: "dns-gateway-peer-id"
+        metric: 100
+        masquerade: true
+    resources:
+      - address: "internal.example.com"
+        name: "internal-portal"
+        groups:
+          - "all-users-group-id"
+      - address: "*.corp.example.com"
+        name: "corp-subdomains"
+        description: "All corporate subdomains"
+        groups:
+          - "employees-group-id"
+    state: present
 ```
+
+**Router options:**
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `peer` | str | - | Peer ID (mutually exclusive with `peer_groups`) |
+| `peer_groups` | list | - | List of peer group IDs for HA |
+| `metric` | int | 9999 | Route priority (lower = higher priority) |
+| `masquerade` | bool | false | Enable NAT for traffic through this router |
+
+**Resource options:**
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `address` | str | required | IP, CIDR, domain, or wildcard (`*.example.com`) |
+| `name` | str | '' | Resource name |
+| `description` | str | '' | Resource description |
+| `enabled` | bool | true | Whether the resource is enabled |
+| `groups` | list | [] | Group IDs that can access this resource |
 
 ### netbird_route
 
-Manage NetBird routes (deprecated API, prefer networks).
+Manage NetBird routes (deprecated API, prefer `netbird_network` with routers/resources).
 
 ```yaml
-- name: Create route
+- name: Create route (legacy)
   community.ansible_netbird.netbird_route:
     api_url: "{{ netbird_api_url }}"
     api_token: "{{ netbird_api_token }}"
@@ -398,6 +490,23 @@ The collection includes a role for declarative configuration:
             destinations: ["group-id-2"]
             protocol: "all"
             action: "accept"
+        state: present
+    
+    # Networks with routing (replaces deprecated routes)
+    netbird_networks:
+      - name: "internal-network"
+        description: "Corporate internal network"
+        routers:
+          - peer: "gateway-peer-id"
+            metric: 100
+            masquerade: true
+        resources:
+          - address: "10.0.0.0/8"
+            name: "internal-range"
+            groups: ["developers-group-id"]
+          - address: "*.internal.example.com"
+            name: "internal-domains"
+            groups: ["developers-group-id"]
         state: present
 
   roles:
