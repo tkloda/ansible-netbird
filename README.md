@@ -207,12 +207,6 @@ Manage NetBird access policies.
 
 Manage NetBird networks with routers and resources. This module provides full routing capabilities, replacing the deprecated routes API.
 
-**Features:**
-- Create networks with routing peers (routers)
-- Define network resources (IP ranges, CIDRs, or domains)
-- Support for domain-based routing including wildcards (`*.example.com`)
-- High availability with multiple routers and different metrics
-
 ```yaml
 # Simple network (container only)
 - name: Create simple network
@@ -288,23 +282,6 @@ Manage NetBird networks with routers and resources. This module provides full ro
           - "employees-group-id"
     state: present
 ```
-
-**Router options:**
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `peer` | str | - | Peer ID (mutually exclusive with `peer_groups`) |
-| `peer_groups` | list | - | List of peer group IDs for HA |
-| `metric` | int | 9999 | Route priority (lower = higher priority) |
-| `masquerade` | bool | false | Enable NAT for traffic through this router |
-
-**Resource options:**
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `address` | str | required | IP, CIDR, domain, or wildcard (`*.example.com`) |
-| `name` | str | '' | Resource name |
-| `description` | str | '' | Resource description |
-| `enabled` | bool | true | Whether the resource is enabled |
-| `groups` | list | [] | Group IDs that can access this resource |
 
 ### netbird_route
 
