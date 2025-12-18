@@ -2,7 +2,7 @@
 # tasks/posture_checks.yml - Posture check management tasks
 
 - name: Manage NetBird posture checks
-  community.netbird.netbird_posture_check:
+  community.ansible_netbird.netbird_posture_check:
     api_url: "{{ netbird_api_url }}"
     api_token: "{{ netbird_api_token }}"
     validate_certs: "{{ netbird_validate_certs }}"
@@ -14,3 +14,4 @@
   loop_control:
     label: "{{ item.name }}"
   when: netbird_posture_checks | length > 0
+

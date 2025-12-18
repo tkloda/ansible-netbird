@@ -14,7 +14,7 @@
 
   tasks:
     - name: Gather current NetBird information
-      community.netbird.netbird_info:
+      community.ansible_netbird.netbird_info:
         api_url: "{{ netbird_api_url }}"
         api_token: "{{ netbird_api_token }}"
         resource: current_user
@@ -25,7 +25,7 @@
         msg: "Connected as: {{ current_user.data.email }}"
 
     - name: Create a group for developers
-      community.netbird.netbird_group:
+      community.ansible_netbird.netbird_group:
         api_url: "{{ netbird_api_url }}"
         api_token: "{{ netbird_api_token }}"
         name: "developers"
@@ -33,7 +33,7 @@
       register: developers_group
 
     - name: Create a group for servers
-      community.netbird.netbird_group:
+      community.ansible_netbird.netbird_group:
         api_url: "{{ netbird_api_url }}"
         api_token: "{{ netbird_api_token }}"
         name: "servers"
@@ -41,7 +41,7 @@
       register: servers_group
 
     - name: Create a setup key for new servers
-      community.netbird.netbird_setup_key:
+      community.ansible_netbird.netbird_setup_key:
         api_url: "{{ netbird_api_url }}"
         api_token: "{{ netbird_api_token }}"
         name: "server-enrollment"
@@ -58,7 +58,7 @@
       when: server_key.changed
 
     - name: Create a policy allowing developers to access servers
-      community.netbird.netbird_policy:
+      community.ansible_netbird.netbird_policy:
         api_url: "{{ netbird_api_url }}"
         api_token: "{{ netbird_api_token }}"
         name: "developers-to-servers"
@@ -78,3 +78,4 @@
               - "8080"
             action: "accept"
         state: present
+

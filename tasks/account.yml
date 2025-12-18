@@ -2,7 +2,7 @@
 # tasks/account.yml - Account settings management tasks
 
 - name: Configure NetBird account settings
-  community.netbird.netbird_account:
+  community.ansible_netbird.netbird_account:
     api_url: "{{ netbird_api_url }}"
     api_token: "{{ netbird_api_token }}"
     validate_certs: "{{ netbird_validate_certs }}"
@@ -21,3 +21,4 @@
     lazy_connection_enabled: "{{ netbird_account_settings.lazy_connection_enabled | default(omit) }}"
     state: present
   when: netbird_account_settings | length > 0
+

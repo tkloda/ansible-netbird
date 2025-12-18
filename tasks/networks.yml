@@ -2,12 +2,14 @@
 # tasks/networks.yml - Network management tasks
 
 - name: Manage NetBird networks
-  community.netbird.netbird_network:
+  community.ansible_netbird.netbird_network:
     api_url: "{{ netbird_api_url }}"
     api_token: "{{ netbird_api_token }}"
     validate_certs: "{{ netbird_validate_certs }}"
     name: "{{ item.name }}"
     description: "{{ item.description | default('') }}"
+    routers: "{{ item.routers | default(omit) }}"
+    resources: "{{ item.resources | default(omit) }}"
     state: "{{ item.state | default('present') }}"
   loop: "{{ netbird_networks }}"
   loop_control:

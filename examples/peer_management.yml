@@ -31,7 +31,7 @@
 
   tasks:
     - name: Get all peers
-      community.netbird.netbird_info:
+      community.ansible_netbird.netbird_info:
         api_url: "{{ netbird_api_url }}"
         api_token: "{{ netbird_api_token }}"
         resource: peers
@@ -51,7 +51,7 @@
           {% endfor %}
 
     - name: Find and configure server peers
-      community.netbird.netbird_peer:
+      community.ansible_netbird.netbird_peer:
         api_url: "{{ netbird_api_url }}"
         api_token: "{{ netbird_api_token }}"
         peer_id: "{{ item.id }}"
@@ -79,7 +79,7 @@
 
     # Uncomment to delete stale peers
     # - name: Delete stale peers
-    #   community.netbird.netbird_peer:
+    #   community.ansible_netbird.netbird_peer:
     #     api_url: "{{ netbird_api_url }}"
     #     api_token: "{{ netbird_api_token }}"
     #     peer_id: "{{ item.id }}"
@@ -88,3 +88,4 @@
     #   loop_control:
     #     label: "{{ item.name }}"
     #   when: stale_peers | length > 0
+

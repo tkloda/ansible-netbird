@@ -119,14 +119,14 @@ options:
             type: list
             elements: dict
 extends_documentation_fragment:
-  - community.netbird.netbird
+  - community.ansible_netbird.netbird
 requirements:
   - python >= 3.6
 '''
 
 EXAMPLES = r'''
 - name: Create a NetBird version check
-  community.netbird.netbird_posture_check:
+  community.ansible_netbird.netbird_posture_check:
     api_url: "https://netbird.example.com"
     api_token: "{{ netbird_token }}"
     name: "minimum-version"
@@ -137,7 +137,7 @@ EXAMPLES = r'''
     state: present
 
 - name: Create a geo-location check
-  community.netbird.netbird_posture_check:
+  community.ansible_netbird.netbird_posture_check:
     api_url: "https://netbird.example.com"
     api_token: "{{ netbird_token }}"
     name: "allowed-countries"
@@ -152,7 +152,7 @@ EXAMPLES = r'''
     state: present
 
 - name: Create a network range check
-  community.netbird.netbird_posture_check:
+  community.ansible_netbird.netbird_posture_check:
     api_url: "https://netbird.example.com"
     api_token: "{{ netbird_token }}"
     name: "office-networks"
@@ -166,7 +166,7 @@ EXAMPLES = r'''
     state: present
 
 - name: Create an OS version check
-  community.netbird.netbird_posture_check:
+  community.ansible_netbird.netbird_posture_check:
     api_url: "https://netbird.example.com"
     api_token: "{{ netbird_token }}"
     name: "os-requirements"
@@ -180,7 +180,7 @@ EXAMPLES = r'''
     state: present
 
 - name: Delete a posture check
-  community.netbird.netbird_posture_check:
+  community.ansible_netbird.netbird_posture_check:
     api_url: "https://netbird.example.com"
     api_token: "{{ netbird_token }}"
     check_id: "check-id-123"
@@ -208,7 +208,7 @@ posture_check:
 '''
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.community.netbird.plugins.module_utils.netbird_api import (
+from ansible_collections.community.ansible_netbird.plugins.module_utils.netbird_api import (
     NetBirdAPI,
     NetBirdAPIError,
     netbird_argument_spec
@@ -342,4 +342,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
 

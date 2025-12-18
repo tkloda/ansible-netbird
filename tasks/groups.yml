@@ -2,7 +2,7 @@
 # tasks/groups.yml - Group management tasks
 
 - name: Manage NetBird groups
-  community.netbird.netbird_group:
+  community.ansible_netbird.netbird_group:
     api_url: "{{ netbird_api_url }}"
     api_token: "{{ netbird_api_token }}"
     validate_certs: "{{ netbird_validate_certs }}"
@@ -14,3 +14,4 @@
   loop_control:
     label: "{{ item.name }}"
   when: netbird_groups | length > 0
+

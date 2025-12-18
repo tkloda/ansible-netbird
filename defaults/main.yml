@@ -67,15 +67,54 @@ netbird_policies: []
 #         action: "accept"
 #     state: present
 
-# Network management
+# Network management (with routers and resources for full routing support)
 netbird_networks: []
 # Example:
 # netbird_networks:
 #   - name: "office-network"
 #     description: "Main office network"
+#     routers:
+#       - peer: "gateway-peer-id"        # Use either peer or peer_groups
+#         metric: 100                     # Lower = higher priority
+#         masquerade: true                # NAT traffic through this router
+#       - peer_groups:                    # For HA with multiple routers
+#           - "backup-gateways-group"
+#         metric: 200
+#         masquerade: true
+#     resources:
+#       - address: "10.0.0.0/8"           # Network CIDR
+#         name: "internal-range"
+#         description: "All internal IPs"
+#         groups:                          # Who can access this resource
+#           - "all-users-group-id"
+#       - address: "192.168.0.0/16"
+#         name: "private-networks"
+#         groups:
+#           - "developers-group-id"
+#     state: present
+#
+#   - name: "simple-network"
+#     description: "Network without routing (container only)"
+#     state: present
+#
+#   - name: "domain-routing"
+#     description: "Route traffic based on domain names"
+#     routers:
+#       - peer: "dns-gateway-peer-id"
+#         metric: 100
+#         masquerade: true
+#     resources:
+#       - address: "internal.example.com"     # Single domain
+#         name: "internal-portal"
+#         groups:
+#           - "all-users-group-id"
+#       - address: "*.corp.example.com"       # Wildcard for all subdomains
+#         name: "corp-subdomains"
+#         groups:
+#           - "employees-group-id"
 #     state: present
 
-# Route management (deprecated API, prefer networks)
+# Route management (deprecated API, prefer networks with routers/resources)
 netbird_routes: []
 # Example:
 # netbird_routes:
@@ -128,3 +167,4 @@ netbird_account_settings: {}
 #   peer_inactivity_expiration_enabled: false
 #   jwt_groups_enabled: false
 #   dns_domain: "netbird.example.com"
+

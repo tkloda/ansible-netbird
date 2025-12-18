@@ -1,6 +1,6 @@
 ---
 namespace: community
-name: netbird
+name: ansible_netbird
 version: 1.0.0
 readme: README.md
 authors:
@@ -26,3 +26,4 @@ build_ignore:
   - 'tests'
   - 'venv'
   - '__pycache__'
+

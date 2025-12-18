@@ -47,21 +47,21 @@ options:
     type: list
     elements: dict
 extends_documentation_fragment:
-  - community.netbird.netbird
+  - community.ansible_netbird.netbird
 requirements:
   - python >= 3.6
 '''
 
 EXAMPLES = r'''
 - name: Create a group
-  community.netbird.netbird_group:
+  community.ansible_netbird.netbird_group:
     api_url: "https://netbird.example.com"
     api_token: "{{ netbird_token }}"
     name: "developers"
     state: present
 
 - name: Create a group with peers
-  community.netbird.netbird_group:
+  community.ansible_netbird.netbird_group:
     api_url: "https://netbird.example.com"
     api_token: "{{ netbird_token }}"
     name: "production-servers"
@@ -71,7 +71,7 @@ EXAMPLES = r'''
     state: present
 
 - name: Update group peers
-  community.netbird.netbird_group:
+  community.ansible_netbird.netbird_group:
     api_url: "https://netbird.example.com"
     api_token: "{{ netbird_token }}"
     group_id: "group-id-123"
@@ -82,7 +82,7 @@ EXAMPLES = r'''
     state: present
 
 - name: Delete a group
-  community.netbird.netbird_group:
+  community.ansible_netbird.netbird_group:
     api_url: "https://netbird.example.com"
     api_token: "{{ netbird_token }}"
     group_id: "group-id-123"
@@ -113,7 +113,7 @@ group:
 '''
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.community.netbird.plugins.module_utils.netbird_api import (
+from ansible_collections.community.ansible_netbird.plugins.module_utils.netbird_api import (
     NetBirdAPI,
     NetBirdAPIError,
     netbird_argument_spec
@@ -249,4 +249,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
 

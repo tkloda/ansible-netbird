@@ -2,7 +2,7 @@
 # tasks/routes.yml - Route management tasks (deprecated API)
 
 - name: Manage NetBird routes
-  community.netbird.netbird_route:
+  community.ansible_netbird.netbird_route:
     api_url: "{{ netbird_api_url }}"
     api_token: "{{ netbird_api_token }}"
     validate_certs: "{{ netbird_validate_certs }}"
@@ -22,3 +22,4 @@
   loop_control:
     label: "{{ item.network_id }}"
   when: netbird_routes | length > 0
+

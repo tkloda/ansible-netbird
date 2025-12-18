@@ -2,7 +2,7 @@
 # tasks/users.yml - User management tasks
 
 - name: Manage NetBird regular users
-  community.netbird.netbird_user:
+  community.ansible_netbird.netbird_user:
     api_url: "{{ netbird_api_url }}"
     api_token: "{{ netbird_api_token }}"
     validate_certs: "{{ netbird_validate_certs }}"
@@ -19,7 +19,7 @@
   when: netbird_users | length > 0
 
 - name: Manage NetBird service users
-  community.netbird.netbird_user:
+  community.ansible_netbird.netbird_user:
     api_url: "{{ netbird_api_url }}"
     api_token: "{{ netbird_api_token }}"
     validate_certs: "{{ netbird_validate_certs }}"
@@ -33,3 +33,4 @@
   loop_control:
     label: "{{ item.name }}"
   when: netbird_service_users | length > 0
+

@@ -2,7 +2,7 @@
 # tasks/policies.yml - Policy management tasks
 
 - name: Manage NetBird policies
-  community.netbird.netbird_policy:
+  community.ansible_netbird.netbird_policy:
     api_url: "{{ netbird_api_url }}"
     api_token: "{{ netbird_api_token }}"
     validate_certs: "{{ netbird_validate_certs }}"
@@ -15,3 +15,4 @@
   loop_control:
     label: "{{ item.name }}"
   when: netbird_policies | length > 0
+

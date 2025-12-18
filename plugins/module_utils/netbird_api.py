@@ -451,18 +451,19 @@ class NetBirdAPI:
         """Get a specific network resource."""
         return self.get(f'/api/networks/{network_id}/resources/{resource_id}')
 
-    def create_network_resource(self, network_id, address, name='', description='', groups=None):
+    def create_network_resource(self, network_id, address, name='', description='', enabled=True, groups=None):
         """Create a new network resource."""
         data = {
             'address': address,
             'name': name,
             'description': description,
+            'enabled': enabled,
             'groups': groups or []
         }
         return self.post(f'/api/networks/{network_id}/resources', data=data)
 
     def update_network_resource(self, network_id, resource_id, address=None, name=None, 
-                                description=None, groups=None):
+                                description=None, enabled=None, groups=None):
         """Update a network resource."""
         data = {}
         if address is not None:
@@ -471,6 +472,8 @@ class NetBirdAPI:
             data['name'] = name
         if description is not None:
             data['description'] = description
+        if enabled is not None:
+            data['enabled'] = enabled
         if groups is not None:
             data['groups'] = groups
         return self.put(f'/api/networks/{network_id}/resources/{resource_id}', data=data)
@@ -673,4 +676,5 @@ def netbird_argument_spec():
             default=True
         )
     )
+
 

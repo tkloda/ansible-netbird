@@ -33,7 +33,7 @@ This collection provides comprehensive management of NetBird resources:
 ### From Ansible Galaxy (when published)
 
 ```bash
-ansible-galaxy collection install community.netbird
+ansible-galaxy collection install community.ansible_netbird
 ```
 
 ### From Source
@@ -58,7 +58,7 @@ All modules require API authentication. You can provide credentials in three way
 
 ```yaml
 - name: List peers
-  community.netbird.netbird_info:
+  community.ansible_netbird.netbird_info:
     api_url: "https://netbird.example.com"
     api_token: "{{ netbird_token }}"
     resource: peers
@@ -73,7 +73,7 @@ export NETBIRD_API_TOKEN="your-personal-access-token"
 
 ```yaml
 - name: List peers (uses environment variables)
-  community.netbird.netbird_info:
+  community.ansible_netbird.netbird_info:
     resource: peers
 ```
 
@@ -85,7 +85,7 @@ export NETBIRD_API_TOKEN="your-personal-access-token"
     netbird_api_url: "https://netbird.example.com"
     netbird_api_token: "{{ vault_netbird_token }}"
   roles:
-    - community.netbird
+    - community.ansible_netbird
 ```
 
 ## Modules
@@ -97,7 +97,7 @@ Manage NetBird users (regular and service users).
 ```yaml
 # Create a regular user
 - name: Create user
-  community.netbird.netbird_user:
+  community.ansible_netbird.netbird_user:
     api_url: "{{ netbird_api_url }}"
     api_token: "{{ netbird_api_token }}"
     email: "user@example.com"
@@ -109,7 +109,7 @@ Manage NetBird users (regular and service users).
 
 # Create a service user
 - name: Create service user
-  community.netbird.netbird_user:
+  community.ansible_netbird.netbird_user:
     api_url: "{{ netbird_api_url }}"
     api_token: "{{ netbird_api_token }}"
     name: "automation-service"
@@ -124,7 +124,7 @@ Manage NetBird groups.
 
 ```yaml
 - name: Create a group
-  community.netbird.netbird_group:
+  community.ansible_netbird.netbird_group:
     api_url: "{{ netbird_api_url }}"
     api_token: "{{ netbird_api_token }}"
     name: "production-servers"
@@ -140,7 +140,7 @@ Manage NetBird peer settings.
 
 ```yaml
 - name: Configure peer
-  community.netbird.netbird_peer:
+  community.ansible_netbird.netbird_peer:
     api_url: "{{ netbird_api_url }}"
     api_token: "{{ netbird_api_token }}"
     peer_id: "peer-id-123"
@@ -156,7 +156,7 @@ Manage NetBird setup keys for peer enrollment.
 
 ```yaml
 - name: Create reusable setup key
-  community.netbird.netbird_setup_key:
+  community.ansible_netbird.netbird_setup_key:
     api_url: "{{ netbird_api_url }}"
     api_token: "{{ netbird_api_token }}"
     name: "server-enrollment"
@@ -180,7 +180,7 @@ Manage NetBird access policies.
 
 ```yaml
 - name: Create access policy
-  community.netbird.netbird_policy:
+  community.ansible_netbird.netbird_policy:
     api_url: "{{ netbird_api_url }}"
     api_token: "{{ netbird_api_token }}"
     name: "developers-to-servers"
@@ -206,7 +206,7 @@ Manage NetBird networks.
 
 ```yaml
 - name: Create network
-  community.netbird.netbird_network:
+  community.ansible_netbird.netbird_network:
     api_url: "{{ netbird_api_url }}"
     api_token: "{{ netbird_api_token }}"
     name: "office-network"
@@ -220,7 +220,7 @@ Manage NetBird routes (deprecated API, prefer networks).
 
 ```yaml
 - name: Create route
-  community.netbird.netbird_route:
+  community.ansible_netbird.netbird_route:
     api_url: "{{ netbird_api_url }}"
     api_token: "{{ netbird_api_token }}"
     network_id: "internal-route"
@@ -242,7 +242,7 @@ Manage NetBird DNS settings and nameserver groups.
 ```yaml
 # Create nameserver group
 - name: Create DNS nameserver group
-  community.netbird.netbird_dns:
+  community.ansible_netbird.netbird_dns:
     api_url: "{{ netbird_api_url }}"
     api_token: "{{ netbird_api_token }}"
     resource_type: nameserver_group
@@ -259,7 +259,7 @@ Manage NetBird DNS settings and nameserver groups.
 
 # Update DNS settings
 - name: Configure DNS settings
-  community.netbird.netbird_dns:
+  community.ansible_netbird.netbird_dns:
     api_url: "{{ netbird_api_url }}"
     api_token: "{{ netbird_api_token }}"
     resource_type: settings
@@ -274,7 +274,7 @@ Manage NetBird posture checks for security compliance.
 
 ```yaml
 - name: Create version check
-  community.netbird.netbird_posture_check:
+  community.ansible_netbird.netbird_posture_check:
     api_url: "{{ netbird_api_url }}"
     api_token: "{{ netbird_api_token }}"
     name: "minimum-version"
@@ -285,7 +285,7 @@ Manage NetBird posture checks for security compliance.
     state: present
 
 - name: Create geo-location check
-  community.netbird.netbird_posture_check:
+  community.ansible_netbird.netbird_posture_check:
     api_url: "{{ netbird_api_url }}"
     api_token: "{{ netbird_api_token }}"
     name: "allowed-countries"
@@ -304,7 +304,7 @@ Manage NetBird account settings.
 
 ```yaml
 - name: Configure account settings
-  community.netbird.netbird_account:
+  community.ansible_netbird.netbird_account:
     api_url: "{{ netbird_api_url }}"
     api_token: "{{ netbird_api_token }}"
     peer_login_expiration_enabled: true
@@ -323,7 +323,7 @@ Manage NetBird personal access tokens.
 
 ```yaml
 - name: Create access token
-  community.netbird.netbird_token:
+  community.ansible_netbird.netbird_token:
     api_url: "{{ netbird_api_url }}"
     api_token: "{{ netbird_api_token }}"
     user_id: "user-id-123"
@@ -344,21 +344,21 @@ Gather information about NetBird resources.
 
 ```yaml
 - name: Get all peers
-  community.netbird.netbird_info:
+  community.ansible_netbird.netbird_info:
     api_url: "{{ netbird_api_url }}"
     api_token: "{{ netbird_api_token }}"
     resource: peers
   register: peers
 
 - name: Get all groups
-  community.netbird.netbird_info:
+  community.ansible_netbird.netbird_info:
     api_url: "{{ netbird_api_url }}"
     api_token: "{{ netbird_api_token }}"
     resource: groups
   register: groups
 
 - name: Get current user
-  community.netbird.netbird_info:
+  community.ansible_netbird.netbird_info:
     api_url: "{{ netbird_api_url }}"
     api_token: "{{ netbird_api_token }}"
     resource: current_user
@@ -401,7 +401,7 @@ The collection includes a role for declarative configuration:
         state: present
 
   roles:
-    - community.netbird
+    - community.ansible_netbird
 ```
 
 See `defaults/main.yml` for all available role variables.

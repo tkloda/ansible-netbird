@@ -86,14 +86,14 @@ options:
     type: list
     elements: str
 extends_documentation_fragment:
-  - community.netbird.netbird
+  - community.ansible_netbird.netbird
 requirements:
   - python >= 3.6
 '''
 
 EXAMPLES = r'''
 - name: Create a route to internal network
-  community.netbird.netbird_route:
+  community.ansible_netbird.netbird_route:
     api_url: "https://netbird.example.com"
     api_token: "{{ netbird_token }}"
     network_id: "internal-route"
@@ -108,7 +108,7 @@ EXAMPLES = r'''
     state: present
 
 - name: Create a route with peer groups
-  community.netbird.netbird_route:
+  community.ansible_netbird.netbird_route:
     api_url: "https://netbird.example.com"
     api_token: "{{ netbird_token }}"
     network_id: "ha-route"
@@ -124,7 +124,7 @@ EXAMPLES = r'''
     state: present
 
 - name: Disable a route
-  community.netbird.netbird_route:
+  community.ansible_netbird.netbird_route:
     api_url: "https://netbird.example.com"
     api_token: "{{ netbird_token }}"
     route_id: "route-id-123"
@@ -132,7 +132,7 @@ EXAMPLES = r'''
     state: present
 
 - name: Delete a route
-  community.netbird.netbird_route:
+  community.ansible_netbird.netbird_route:
     api_url: "https://netbird.example.com"
     api_token: "{{ netbird_token }}"
     route_id: "route-id-123"
@@ -178,7 +178,7 @@ route:
 '''
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.community.netbird.plugins.module_utils.netbird_api import (
+from ansible_collections.community.ansible_netbird.plugins.module_utils.netbird_api import (
     NetBirdAPI,
     NetBirdAPIError,
     netbird_argument_spec
@@ -363,4 +363,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
 

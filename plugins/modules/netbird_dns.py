@@ -102,14 +102,14 @@ options:
     type: list
     elements: str
 extends_documentation_fragment:
-  - community.netbird.netbird
+  - community.ansible_netbird.netbird
 requirements:
   - python >= 3.6
 '''
 
 EXAMPLES = r'''
 - name: Create a nameserver group
-  community.netbird.netbird_dns:
+  community.ansible_netbird.netbird_dns:
     api_url: "https://netbird.example.com"
     api_token: "{{ netbird_token }}"
     resource_type: nameserver_group
@@ -131,7 +131,7 @@ EXAMPLES = r'''
     state: present
 
 - name: Create a primary DNS nameserver group
-  community.netbird.netbird_dns:
+  community.ansible_netbird.netbird_dns:
     api_url: "https://netbird.example.com"
     api_token: "{{ netbird_token }}"
     resource_type: nameserver_group
@@ -149,7 +149,7 @@ EXAMPLES = r'''
     state: present
 
 - name: Update DNS settings
-  community.netbird.netbird_dns:
+  community.ansible_netbird.netbird_dns:
     api_url: "https://netbird.example.com"
     api_token: "{{ netbird_token }}"
     resource_type: settings
@@ -158,7 +158,7 @@ EXAMPLES = r'''
     state: present
 
 - name: Delete a nameserver group
-  community.netbird.netbird_dns:
+  community.ansible_netbird.netbird_dns:
     api_url: "https://netbird.example.com"
     api_token: "{{ netbird_token }}"
     resource_type: nameserver_group
@@ -210,7 +210,7 @@ nameserver_group:
 '''
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.community.netbird.plugins.module_utils.netbird_api import (
+from ansible_collections.community.ansible_netbird.plugins.module_utils.netbird_api import (
     NetBirdAPI,
     NetBirdAPIError,
     netbird_argument_spec
@@ -407,4 +407,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
 

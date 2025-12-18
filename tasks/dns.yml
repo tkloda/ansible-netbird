@@ -2,7 +2,7 @@
 # tasks/dns.yml - DNS management tasks
 
 - name: Manage NetBird DNS nameserver groups
-  community.netbird.netbird_dns:
+  community.ansible_netbird.netbird_dns:
     api_url: "{{ netbird_api_url }}"
     api_token: "{{ netbird_api_token }}"
     validate_certs: "{{ netbird_validate_certs }}"
@@ -22,7 +22,7 @@
   when: netbird_dns_nameserver_groups | length > 0
 
 - name: Configure NetBird DNS settings
-  community.netbird.netbird_dns:
+  community.ansible_netbird.netbird_dns:
     api_url: "{{ netbird_api_url }}"
     api_token: "{{ netbird_api_token }}"
     validate_certs: "{{ netbird_validate_certs }}"
@@ -30,3 +30,4 @@
     disabled_management_groups: "{{ netbird_dns_disabled_management_groups }}"
     state: present
   when: netbird_dns_disabled_management_groups | length > 0
+

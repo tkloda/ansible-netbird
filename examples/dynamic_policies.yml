@@ -49,7 +49,7 @@
 
   tasks:
     - name: Get all existing groups
-      community.netbird.netbird_info:
+      community.ansible_netbird.netbird_info:
         api_url: "{{ netbird_api_url }}"
         api_token: "{{ netbird_api_token }}"
         resource: groups
@@ -64,7 +64,7 @@
         msg: "Available groups: {{ group_map.keys() | list }}"
 
     - name: Create policies dynamically
-      community.netbird.netbird_policy:
+      community.ansible_netbird.netbird_policy:
         api_url: "{{ netbird_api_url }}"
         api_token: "{{ netbird_api_token }}"
         name: "{{ item.name }}"
@@ -85,3 +85,4 @@
       when: >
         (item.source_groups | difference(group_map.keys() | list) | length == 0) and
         (item.destination_groups | difference(group_map.keys() | list) | length == 0)
+

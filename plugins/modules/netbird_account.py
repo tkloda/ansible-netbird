@@ -84,14 +84,14 @@ options:
       - Enable or disable experimental lazy connection.
     type: bool
 extends_documentation_fragment:
-  - community.netbird.netbird
+  - community.ansible_netbird.netbird
 requirements:
   - python >= 3.6
 '''
 
 EXAMPLES = r'''
 - name: Enable peer login expiration
-  community.netbird.netbird_account:
+  community.ansible_netbird.netbird_account:
     api_url: "https://netbird.example.com"
     api_token: "{{ netbird_token }}"
     peer_login_expiration_enabled: true
@@ -99,7 +99,7 @@ EXAMPLES = r'''
     state: present
 
 - name: Configure JWT groups
-  community.netbird.netbird_account:
+  community.ansible_netbird.netbird_account:
     api_url: "https://netbird.example.com"
     api_token: "{{ netbird_token }}"
     jwt_groups_enabled: true
@@ -110,14 +110,14 @@ EXAMPLES = r'''
     state: present
 
 - name: Configure custom DNS domain
-  community.netbird.netbird_account:
+  community.ansible_netbird.netbird_account:
     api_url: "https://netbird.example.com"
     api_token: "{{ netbird_token }}"
     dns_domain: "netbird.example.com"
     state: present
 
 - name: Configure peer expiration settings
-  community.netbird.netbird_account:
+  community.ansible_netbird.netbird_account:
     api_url: "https://netbird.example.com"
     api_token: "{{ netbird_token }}"
     peer_login_expiration_enabled: true
@@ -127,7 +127,7 @@ EXAMPLES = r'''
     state: present
 
 - name: Delete an account (use with caution)
-  community.netbird.netbird_account:
+  community.ansible_netbird.netbird_account:
     api_url: "https://netbird.example.com"
     api_token: "{{ netbird_token }}"
     account_id: "account-id-123"
@@ -183,7 +183,7 @@ account:
 '''
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.community.netbird.plugins.module_utils.netbird_api import (
+from ansible_collections.community.ansible_netbird.plugins.module_utils.netbird_api import (
     NetBirdAPI,
     NetBirdAPIError,
     netbird_argument_spec
@@ -329,4 +329,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
 

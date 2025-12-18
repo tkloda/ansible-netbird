@@ -38,28 +38,28 @@ options:
       - Only applicable when resource is 'cities'.
     type: str
 extends_documentation_fragment:
-  - community.netbird.netbird
+  - community.ansible_netbird.netbird
 requirements:
   - python >= 3.6
 '''
 
 EXAMPLES = r'''
 - name: Get all peers
-  community.netbird.netbird_info:
+  community.ansible_netbird.netbird_info:
     api_url: "https://netbird.example.com"
     api_token: "{{ netbird_token }}"
     resource: peers
   register: peers_info
 
 - name: Get all groups
-  community.netbird.netbird_info:
+  community.ansible_netbird.netbird_info:
     api_url: "https://netbird.example.com"
     api_token: "{{ netbird_token }}"
     resource: groups
   register: groups_info
 
 - name: Get all service users
-  community.netbird.netbird_info:
+  community.ansible_netbird.netbird_info:
     api_url: "https://netbird.example.com"
     api_token: "{{ netbird_token }}"
     resource: users
@@ -67,35 +67,35 @@ EXAMPLES = r'''
   register: service_users_info
 
 - name: Get current user info
-  community.netbird.netbird_info:
+  community.ansible_netbird.netbird_info:
     api_url: "https://netbird.example.com"
     api_token: "{{ netbird_token }}"
     resource: current_user
   register: current_user_info
 
 - name: Get all policies
-  community.netbird.netbird_info:
+  community.ansible_netbird.netbird_info:
     api_url: "https://netbird.example.com"
     api_token: "{{ netbird_token }}"
     resource: policies
   register: policies_info
 
 - name: Get DNS settings
-  community.netbird.netbird_info:
+  community.ansible_netbird.netbird_info:
     api_url: "https://netbird.example.com"
     api_token: "{{ netbird_token }}"
     resource: dns_settings
   register: dns_settings
 
 - name: Get all events
-  community.netbird.netbird_info:
+  community.ansible_netbird.netbird_info:
     api_url: "https://netbird.example.com"
     api_token: "{{ netbird_token }}"
     resource: events
   register: events_info
 
 - name: Get available countries for geo-location
-  community.netbird.netbird_info:
+  community.ansible_netbird.netbird_info:
     api_url: "https://netbird.example.com"
     api_token: "{{ netbird_token }}"
     resource: countries
@@ -119,7 +119,7 @@ count:
 '''
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.community.netbird.plugins.module_utils.netbird_api import (
+from ansible_collections.community.ansible_netbird.plugins.module_utils.netbird_api import (
     NetBirdAPI,
     NetBirdAPIError,
     netbird_argument_spec
@@ -213,4 +213,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
 
