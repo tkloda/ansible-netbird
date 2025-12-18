@@ -14,7 +14,7 @@ This collection provides comprehensive management of NetBird resources:
 - **Setup Keys** - Create enrollment keys for new peers
 - **Policies** - Define network access rules between groups
 - **Networks** - Configure network routing with routers and resources
-  - IP/CIDR routing (`10.0.0.0/8`, `192.168.1.0/24`)
+  - IP/CIDR routing (`172.16.0.0/16`, `192.168.1.0/24`)
   - Domain-based routing (`example.com`, `*.corp.example.com`)
   - High availability with multiple routers and metrics
 - **Routes** - Manage legacy routes (deprecated, use Networks instead)
@@ -235,7 +235,7 @@ Manage NetBird networks with routers and resources. This module provides full ro
         metric: 100
         masquerade: true
     resources:
-      - address: "10.0.0.0/8"
+      - address: "172.16.0.0/16"
         name: "internal-range"
         description: "All internal IPs"
         groups:
@@ -316,7 +316,7 @@ Manage NetBird routes (deprecated API, prefer `netbird_network` with routers/res
     api_url: "{{ netbird_api_url }}"
     api_token: "{{ netbird_api_token }}"
     network_id: "internal-route"
-    network: "10.0.0.0/8"
+    network: "172.16.0.0/16"
     description: "Route to internal network"
     peer_id: "gateway-peer-id"
     metric: 100
@@ -501,7 +501,7 @@ The collection includes a role for declarative configuration:
             metric: 100
             masquerade: true
         resources:
-          - address: "10.0.0.0/8"
+          - address: "172.16.0.0/16"
             name: "internal-range"
             groups: ["developers-group-id"]
           - address: "*.internal.example.com"

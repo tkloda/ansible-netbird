@@ -97,7 +97,7 @@ EXAMPLES = r'''
     api_url: "https://netbird.example.com"
     api_token: "{{ netbird_token }}"
     network_id: "internal-route"
-    network: "10.0.0.0/8"
+    network: "172.16.0.0/16"
     description: "Route to internal network"
     peer_id: "gateway-peer-id"
     metric: 100

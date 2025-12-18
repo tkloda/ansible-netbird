@@ -114,7 +114,7 @@
         checks:
           peer_network_range_check:
             ranges:
-              - "10.0.0.0/8"
+              - "172.16.0.0/16"
               - "192.168.0.0/16"
               - "172.16.0.0/12"
             action: "allow"
@@ -133,7 +133,7 @@
             metric: 200
             masquerade: true
         resources:
-          - address: "10.0.0.0/8"
+          - address: "172.16.0.0/16"
             name: "internal-networks"
             description: "All internal IP ranges"
             groups: []  # Will be updated with group IDs

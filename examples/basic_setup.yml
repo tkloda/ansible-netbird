@@ -91,7 +91,7 @@
             metric: 100
             masquerade: true
         resources:
-          - address: "10.0.0.0/8"
+          - address: "172.16.0.0/16"
             name: "internal-range"
             description: "All internal IP addresses"
             groups:

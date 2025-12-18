@@ -82,7 +82,7 @@ netbird_networks: []
 #         metric: 200
 #         masquerade: true
 #     resources:
-#       - address: "10.0.0.0/8"           # Network CIDR
+#       - address: "172.16.0.0/16"           # Network CIDR
 #         name: "internal-range"
 #         description: "All internal IPs"
 #         groups:                          # Who can access this resource
@@ -119,7 +119,7 @@ netbird_routes: []
 # Example:
 # netbird_routes:
 #   - network_id: "internal-route"
-#     network: "10.0.0.0/8"
+#     network: "172.16.0.0/16"
 #     description: "Route to internal network"
 #     peer_id: "gateway-peer-id"
 #     metric: 100

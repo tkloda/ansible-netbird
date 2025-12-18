@@ -160,7 +160,7 @@ EXAMPLES = r'''
     checks:
       peer_network_range_check:
         ranges:
-          - "10.0.0.0/8"
+          - "172.16.0.0/16"
           - "192.168.0.0/16"
         action: "allow"
     state: present

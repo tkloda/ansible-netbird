@@ -85,7 +85,7 @@ options:
       address:
         description:
           - Network address, CIDR, or domain name.
-          - Supports direct hosts (1.1.1.1), subnets (10.0.0.0/8), domains (example.com), and wildcards (*.example.com).
+          - Supports direct hosts (1.1.1.1), subnets (172.16.0.0/16), domains (example.com), and wildcards (*.example.com).
         type: str
         required: true
       name:
@@ -135,7 +135,7 @@ EXAMPLES = r'''
         metric: 100
         masquerade: true
     resources:
-      - address: "10.0.0.0/8"
+      - address: "172.16.0.0/16"
         name: "internal-range"
         description: "All internal IPs"
         groups:
@@ -208,7 +208,7 @@ EXAMPLES = r'''
         metric: 100
         masquerade: true
     resources:
-      - address: "10.0.0.0/8"
+      - address: "172.16.0.0/16"
         name: "internal-range"
         groups:
           - "all-users-group-id"
